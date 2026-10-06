@@ -1,0 +1,89 @@
+---
+// 支払い先ごとの還元額を明細の形で計算するツール
+interface Props {
+  heading?: string;
+}
+const { heading = '1年間の還元額の計算ツール' } = Astro.props;
+const rows = [
+  { key: 'net', label: '光回線・スマホ代', amount: 9000, rate: 1 },
+  { key: 'shop', label: 'ネット通販（Amazon・楽天など）', amount: 15000, rate: 1 },
+  { key: 'daily', label: 'スーパー・コンビニ', amount: 30000, rate: 0.5 },
+  { key: 'other', label: 'その他の支払い', amount: 20000, rate: 0.5 },
+];
+---
+<section class="statement" aria-labelledby="card-reward-title" data-card-reward>
+  <div>
+    <h2 id="card-reward-title">{heading}</h2>
+    <p class="note">比べたいカードの還元率を、公式サイトで確認して入力してください。最初に入っている数字は入力例です。</p>
+    <div class="fields">
+      {
+        rows.map((r) => (
+          <div class="field">
+            <label for={`cr-${r.key}-amount`}>{r.label}</label>
+            <div class="input">
+              <input id={`cr-${r.key}-amount`} inputmode="numeric" value={r.amount} data-amount={r.key} aria-label={`${r.label}の月の支払額`} />
+              <span class="unit">円／月</span>
+              <input id={`cr-${r.key}-rate`} inputmode="decimal" value={r.rate} data-rate={r.key} aria-label={`${r.label}の還元率`} style="max-width:5rem" />
+              <span class="unit">%</span>
+            </div>
+          </div>
+        ))
+      }
+      <div class="field">
+        <label for="cr-fee">年会費<span class="hint">無料なら0</span></label>
+        <div class="input"><input id="cr-fee" inputmode="numeric" value="0" data-fee /><span class="unit">円／年</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="bill" aria-live="polite">
+    <div class="bill-title">明細<small>12か月分</small></div>
+    <dl>
+      {
+        rows.map((r) => (
+          <div class="row">
+            <dt>{r.label}</dt>
+            <dd data-out={r.key}>0円</dd>
+          </div>
+        ))
+      }
+      <div class="row minus"><dt>年会費</dt><dd data-out="fee">−0円</dd></div>
+      <div class="row total"><dt>実質の還元額</dt><dd data-out="total">0円</dd></div>
+    </dl>
+    <div class="per"><span>1年間の支払い合計</span><strong data-out="spend">0円</strong></div>
+  </div>
+</section>
+
+<script>
+  const yen = (n: number) => `${Math.round(n).toLocaleString('ja-JP')}円`;
+  const num = (el: HTMLInputElement | null) => {
+    if (!el) return 0;
+    const v = Number(el.value.replace(/[^\d.]/g, ''));
+    return Number.isFinite(v) ? v : 0;
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-card-reward]').forEach((root) => {
+    const update = () => {
+      let reward = 0;
+      let spend = 0;
+      root.querySelectorAll<HTMLInputElement>('[data-amount]').forEach((amountEl) => {
+        const key = amountEl.dataset.amount as string;
+        const yearly = num(amountEl) * 12;
+        const rate = num(root.querySelector<HTMLInputElement>(`[data-rate="${key}"]`)) / 100;
+        const r = yearly * rate;
+        reward += r;
+        spend += yearly;
+        const out = root.querySelector(`[data-out="${key}"]`);
+        if (out) out.textContent = yen(r);
+      });
+      const fee = num(root.querySelector<HTMLInputElement>('[data-fee]'));
+      const feeOut = root.querySelector('[data-out="fee"]');
+      if (feeOut) feeOut.textContent = `−${yen(fee)}`;
+      const totalOut = root.querySelector('[data-out="total"]');
+      if (totalOut) totalOut.textContent = yen(reward - fee);
+      const spendOut = root.querySelector('[data-out="spend"]');
+      if (spendOut) spendOut.textContent = yen(spend);
+    };
+    root.querySelectorAll('input').forEach((input) => input.addEventListener('input', update));
+    update();
+  });
+</script>

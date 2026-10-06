@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import Simulator from '../components/Simulator.astro';
+import ArticleList from '../components/ArticleList.astro';
+import { site } from '../site.config';
+---
+<Base>
+  <section class="hero">
+    <h1>{site.hero.title}</h1>
+    <p>{site.hero.lead}</p>
+  </section>
+  <Simulator kind={site.simulator} />
+  <ArticleList heading="新しい記事" limit={10} />
+</Base>

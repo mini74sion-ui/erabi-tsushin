@@ -1,0 +1,87 @@
+---
+// 光回線・ホームルーターの「2年総額」を明細の形で計算するツール
+interface Props {
+  heading?: string;
+}
+const { heading = '2年総額の計算ツール' } = Astro.props;
+---
+<section class="statement" aria-labelledby="net-total-title" data-net-total>
+  <div>
+    <h2 id="net-total-title">{heading}</h2>
+    <p class="note">比べたいプランの金額を、公式サイトで確認して入力してください。最初に入っている数字は入力例です。</p>
+    <div class="fields">
+      <div class="field">
+        <label for="nt-monthly">月額料金<span class="hint">割引がある場合は、割引後の金額</span></label>
+        <div class="input"><input id="nt-monthly" inputmode="numeric" value="5000" data-key="monthly" /><span class="unit">円／月</span></div>
+      </div>
+      <div class="field">
+        <label for="nt-months">使う期間</label>
+        <div class="input"><input id="nt-months" inputmode="numeric" value="24" data-key="months" /><span class="unit">か月</span></div>
+      </div>
+      <div class="field">
+        <label for="nt-fee">事務手数料・初期費用</label>
+        <div class="input"><input id="nt-fee" inputmode="numeric" value="3300" data-key="fee" /><span class="unit">円</span></div>
+      </div>
+      <div class="field">
+        <label for="nt-work">工事費の総額<span class="hint">分割払いでも総額を入力</span></label>
+        <div class="input"><input id="nt-work" inputmode="numeric" value="20000" data-key="work" /><span class="unit">円</span></div>
+      </div>
+      <div class="field">
+        <label for="nt-workoff">工事費の割引の総額<span class="hint">期間中に受けられる分だけ</span></label>
+        <div class="input"><input id="nt-workoff" inputmode="numeric" value="20000" data-key="workoff" /><span class="unit">円</span></div>
+      </div>
+      <div class="field">
+        <label for="nt-bonus">キャッシュバックなどの特典<span class="hint">受け取りの条件を満たせる分だけ</span></label>
+        <div class="input"><input id="nt-bonus" inputmode="numeric" value="0" data-key="bonus" /><span class="unit">円</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="bill" aria-live="polite">
+    <div class="bill-title">明細<small data-out="period">24か月分</small></div>
+    <dl>
+      <div class="row"><dt>月額料金 × 期間</dt><dd data-out="base">120,000円</dd></div>
+      <div class="row"><dt>事務手数料・初期費用</dt><dd data-out="fee">3,300円</dd></div>
+      <div class="row"><dt>工事費</dt><dd data-out="work">20,000円</dd></div>
+      <div class="row minus"><dt>工事費の割引</dt><dd data-out="workoff">−20,000円</dd></div>
+      <div class="row minus"><dt>特典</dt><dd data-out="bonus">−0円</dd></div>
+      <div class="row total"><dt>総額</dt><dd data-out="total">123,300円</dd></div>
+    </dl>
+    <div class="per"><span>1か月あたり（実質）</span><strong data-out="per">5,138円</strong></div>
+  </div>
+</section>
+
+<script>
+  const yen = (n: number) => `${Math.round(n).toLocaleString('ja-JP')}円`;
+  const num = (el: HTMLInputElement | null) => {
+    if (!el) return 0;
+    const v = Number(el.value.replace(/[^\d.]/g, ''));
+    return Number.isFinite(v) ? v : 0;
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-net-total]').forEach((root) => {
+    const get = (key: string) => num(root.querySelector<HTMLInputElement>(`[data-key="${key}"]`));
+    const out = (key: string, text: string) => {
+      const el = root.querySelector(`[data-out="${key}"]`);
+      if (el) el.textContent = text;
+    };
+    const update = () => {
+      const months = Math.max(1, get('months'));
+      const base = get('monthly') * months;
+      const fee = get('fee');
+      const work = get('work');
+      const workoff = Math.min(get('workoff'), work);
+      const bonus = get('bonus');
+      const total = Math.max(0, base + fee + work - workoff - bonus);
+      out('period', `${months}か月分`);
+      out('base', yen(base));
+      out('fee', yen(fee));
+      out('work', yen(work));
+      out('workoff', `−${yen(workoff)}`);
+      out('bonus', `−${yen(bonus)}`);
+      out('total', yen(total));
+      out('per', yen(total / months));
+    };
+    root.querySelectorAll('input').forEach((input) => input.addEventListener('input', update));
+    update();
+  });
+</script>

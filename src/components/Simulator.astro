@@ -1,0 +1,12 @@
+---
+import NetTotal from './NetTotal.astro';
+import CardReward from './CardReward.astro';
+
+interface Props {
+  kind: 'net-total' | 'card-reward';
+  heading?: string;
+}
+const { kind, heading } = Astro.props;
+---
+{kind === 'net-total' && <NetTotal heading={heading} />}
+{kind === 'card-reward' && <CardReward heading={heading} />}

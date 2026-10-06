@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import { ymd, isoDate } from '../lib/format';
+
+interface Props {
+  heading: string;
+  limit?: number;
+}
+const { heading, limit } = Astro.props;
+const all = (await getCollection('articles', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.updated.valueOf() - a.data.updated.valueOf(),
+);
+const items = limit ? all.slice(0, limit) : all;
+---
+<section class="ledger" aria-labelledby="ledger-title">
+  <h2 id="ledger-title">{heading}</h2>
+  <ol>
+    {
+      items.length === 0 ? (
+        <li>
+          <span class="empty">記事を準備しています。</span>
+        </li>
+      ) : (
+        items.map((a) => (
+          <li>
+            <time datetime={isoDate(a.data.updated)}>{ymd(a.data.updated)}</time>
+            <a href={`/articles/${a.id}/`}>{a.data.title}</a>
+            <span class="kind">{a.data.type}</span>
+          </li>
+        ))
+      )
+    }
+  </ol>
+</section>

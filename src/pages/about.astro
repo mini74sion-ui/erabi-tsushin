@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+---
+<Base title="運営者情報" description={`${site.name}の運営者情報と、記事の作り方について。`}>
+  <div class="page">
+    <h1>運営者情報</h1>
+    <table>
+      <tbody>
+        <tr><th scope="row">サイト名</th><td>{site.name}</td></tr>
+        <tr><th scope="row">運営</th><td>えらびラボ</td></tr>
+        <tr><th scope="row">URL</th><td>{site.url}</td></tr>
+        <tr><th scope="row">お問い合わせ</th><td><a href="/contact/">お問い合わせページ</a></td></tr>
+      </tbody>
+    </table>
+
+    <h2>このサイトの目的</h2>
+    <p>{site.tagline}です。月額料金だけでなく、初期費用・割引・特典まで含めた「実際に払う総額」で比べられるよう、計算の内訳を明細の形で示します。</p>
+
+    <h2>記事の作り方</h2>
+    <p>当サイトの記事は、AI（Claude）を活用して作成しています。料金や条件は各社の公式サイトで確認し、記事ごとに「公式情報の確認日」を記載しています。</p>
+    <p>公開前には、数字が公式情報と一致しているかの確認と、広告表示や法令に関する確認の2段階のチェックを行っています。実際に使った体験談として書くことはありません。</p>
+    <p>料金やキャンペーンは変わることがあります。お申し込みの前に、必ず公式サイトで最新の内容をご確認ください。</p>
+
+    <h2>広告について</h2>
+    <p>当サイトはアフィリエイト広告を利用する場合があります。詳しくは<a href="/policy/">広告掲載ポリシー</a>をご覧ください。</p>
+  </div>
+</Base>
