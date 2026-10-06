@@ -4,7 +4,7 @@
 
 ## 仕組み
 
-- Astro の静的サイト。`main` に push すると Cloudflare Pages が自動でビルド・公開する（ビルド：`npm run build`、出力：`dist`）
+- Astro の静的サイト。`main` に push すると Cloudflare（Workers）が自動でビルド・公開する（ビルド：`npm run build`、出力：`dist`）
 - 記事：`src/content/articles/*.md`（frontmatter の項目は `src/content.config.ts` を参照）
 - サイト名・色・計算ツールなどの設定：`src/site.config.ts`
 - 計算ツール：`src/components/NetTotal.astro`（2年総額）、`CardReward.astro`（カード還元額）。記事の frontmatter `simulator` で記事末尾に表示

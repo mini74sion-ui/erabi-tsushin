@@ -5,8 +5,8 @@ export const site = {
   tagline: '光回線・ホームルーター・格安SIMを、2年でいくら払うかで比べるサイト',
   description:
     '光回線・ホームルーター・格安SIMの料金を、公式情報をもとに2年総額で比べる比較メディアです。計算ツールで、あなたの使い方に合わせた総額を確かめられます。',
-  url: 'https://erabi-tsushin.pages.dev',
-  sister: { name: 'えらびラボ カード', url: 'https://erabi-card.pages.dev' },
+  url: 'https://erabi-tsushin.mini74sion.workers.dev',
+  sister: { name: 'えらびラボ カード', url: 'https://erabi-card.mini74sion.workers.dev' },
   simulator: 'net-total' as const,
   hero: {
     title: 'その回線、2年でいくら払いますか',

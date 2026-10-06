@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://erabi-tsushin.pages.dev/sitemap-index.xml
+Sitemap: https://erabi-tsushin.mini74sion.workers.dev/sitemap-index.xml
